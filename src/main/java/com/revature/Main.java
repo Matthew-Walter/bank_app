@@ -52,7 +52,7 @@ public class Main {
                 // check it in the next if statement
                 userController.promptUserForService(controlMap);
                 while(controlMap.containsKey("User")){
-                    System.out.printf("Banking stuff for %s can happen here! Press any key to continue", controlMap.get("User"));
+                    System.out.printf("Banking stuff for %s can happen here!\n", controlMap.get("User"));
                     userController.promptUserAfterLogin(controlMap);
                     /*
                         NOTE: currently the User information has no means of being removed: when you implement a log out

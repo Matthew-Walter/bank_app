@@ -9,7 +9,7 @@ create table "user"(
 
 CREATE TABLE "accounts"(
 	id INTEGER PRIMARY KEY,
-	user_id int NOT NULL,
+	user_id INTEGER NOT NULL,
 	balance double(18, 2),
 	FOREIGN KEY (user_id) REFERENCES user(id)
 );

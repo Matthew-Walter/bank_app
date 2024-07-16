@@ -34,16 +34,92 @@ public class SqliteAccountDao implements AccountDao {
                 ResultSet resultSet = preparedStatement.getGeneratedKeys();
 
                 int newId = resultSet.getInt(1);
-                int newUserId = resultSet.getInt(2);
-                double newBalance = resultSet.getDouble(3);
-                System.out.println(newBalance);
-                System.out.println(newId);
-                System.out.println(newUserId);
-                return new Account(newBalance, newId, newUserId);
+                return new Account(balance, newId, user.getId());
             }
             // if we did not create the new user we throw a custom exception and handle
             // the problem somewhere else
             throw new UserSQLException("User could not be created: please try again");
+        } catch (SQLException exception) {
+            throw new UserSQLException(exception.getMessage());
+        }
+    }
+
+    public List<Account> getAccounts(User user){
+        String sql = "SELECT * FROM accounts WHERE user_id = ?";
+        try (Connection connection = DatabaseConnector.createConnection()) {
+            PreparedStatement preparedStatement = connection.prepareStatement(sql);
+
+            preparedStatement.setInt(1, user.getId());
+
+            ResultSet resultSet = preparedStatement.executeQuery();
+            List<Account> accounts = new ArrayList<>();
+            while(resultSet.next()){
+                Account accountRecord = new Account();
+                accountRecord.setBalance(resultSet.getDouble("balance"));
+                accountRecord.setId(resultSet.getInt("id"));
+                accountRecord.setUser_id(resultSet.getInt("user_id"));
+                accounts.add(accountRecord);
+            }
+            return accounts;
+        } catch (SQLException exception) {
+            throw new UserSQLException(exception.getMessage());
+        }
+    }
+
+    public Account getAccount(int id){
+        String sql = "SELECT * FROM accounts WHERE id = ?";
+        try (Connection connection = DatabaseConnector.createConnection()) {
+            PreparedStatement preparedStatement = connection.prepareStatement(sql);
+
+            preparedStatement.setInt(1, id);
+
+            ResultSet resultSet = preparedStatement.executeQuery();
+            Account account = new Account();
+            account.setBalance(resultSet.getDouble("balance"));
+            account.setId(resultSet.getInt("id"));
+            account.setUser_id(resultSet.getInt("user_id"));
+            return account;
+        } catch (SQLException exception) {
+            throw new UserSQLException(exception.getMessage());
+        }
+    }
+
+    public void withdrawFromAccount(int id, double amount){
+        String sql = "UPDATE accounts SET balance = balance - ? WHERE id = ?";
+        try (Connection connection = DatabaseConnector.createConnection()) {
+            PreparedStatement preparedStatement = connection.prepareStatement(sql);
+
+            preparedStatement.setDouble(1, amount);
+            preparedStatement.setInt(2, id);
+
+            preparedStatement.executeUpdate();
+        } catch (SQLException exception) {
+            throw new UserSQLException(exception.getMessage());
+        }
+    }
+
+    public void depositIntoAccount(int id, double amount){
+        String sql = "UPDATE accounts SET balance = balance + ? WHERE id = ?";
+        try (Connection connection = DatabaseConnector.createConnection()) {
+            PreparedStatement preparedStatement = connection.prepareStatement(sql);
+
+            preparedStatement.setDouble(1, amount);
+            preparedStatement.setInt(2, id);
+
+            preparedStatement.executeUpdate();
+        } catch (SQLException exception) {
+            throw new UserSQLException(exception.getMessage());
+        }
+    }
+
+    public void deleteAccount(int id){
+        String sql = "DELETE FROM accounts WHERE id = ?";
+        try (Connection connection = DatabaseConnector.createConnection()) {
+            PreparedStatement preparedStatement = connection.prepareStatement(sql);
+
+            preparedStatement.setInt(1, id);
+
+            preparedStatement.executeUpdate();
         } catch (SQLException exception) {
             throw new UserSQLException(exception.getMessage());
         }

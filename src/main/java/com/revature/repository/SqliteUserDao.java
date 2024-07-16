@@ -86,23 +86,16 @@ public class SqliteUserDao implements UserDao{
     @Override
     public User getUser(String username){
         try(Connection connection = DatabaseConnector.createConnection()){
-            System.out.println("Preparing fetch statement");
             String sql = "SELECT * FROM user WHERE username = ?";
             PreparedStatement preparedStatement = connection.prepareStatement(sql);
 
             preparedStatement.setString(1, username);
             ResultSet resultSet = preparedStatement.executeQuery();
-            System.out.println("If resultset has next");
             if(resultSet.next()){
-                System.out.println("Create the user");
 
                 int id = resultSet.getInt(1);
                 String resultUsername = resultSet.getString(2);
                 String resultPassword = resultSet.getString(3);
-                System.out.println(id);
-                System.out.println(resultUsername);
-                System.out.println(resultPassword);
-                System.out.println(new User(resultUsername, resultPassword, id));
                 return new User(resultUsername, resultPassword, id);
             }
             return null;

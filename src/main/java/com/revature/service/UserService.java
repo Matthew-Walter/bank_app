@@ -2,6 +2,7 @@ package com.revature.service;
 
 import com.revature.entity.User;
 import com.revature.exception.LoginFail;
+import com.revature.exception.UsernameInUse;
 import com.revature.repository.UserDao;
 
 import java.util.List;
@@ -60,7 +61,7 @@ public class UserService {
         // 3.2 inform user of results
         // we can use an exception to return an error message if the credentials are not persisted
         // TODO: handle this exception and make it a custom exception
-        throw new RuntimeException("placeholder for custom exception");
+        throw new UsernameInUse("placeholder for custom exception");
     }
 
     public User getSpecificUser(String username){
@@ -83,8 +84,10 @@ public class UserService {
 
     // we will use this method to check the length of the credentials
     private boolean checkUsernamePasswordLength(User newUserCredentials){
-        boolean usernameIsValid = newUserCredentials.getUsername().length() <= 30;
-        boolean passwordIsValid = newUserCredentials.getPassword().length() <= 30;
+        boolean usernameIsValid = newUserCredentials.getUsername().length() <= 30 && newUserCredentials.getUsername().length() > 3;
+        boolean passwordIsValid = newUserCredentials.getPassword().length() <= 30 && newUserCredentials.getUsername().length() > 5;
+        if (!usernameIsValid) System.out.println("Usernames must be less than 30 characters and more than 3 characters.");
+        if (!passwordIsValid) System.out.println("Passwords must be less than 30 characters and more than 5 characters.");
         return usernameIsValid && passwordIsValid;
     }
 
@@ -95,7 +98,9 @@ public class UserService {
         for(User user : users){
             if(newUserCredentials.getUsername().equals(user.getUsername())){
                 usernameIsUnique = false;
+                System.out.println("Username already in use");
                 break;
+
             }
         }
         return usernameIsUnique;

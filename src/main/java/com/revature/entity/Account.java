@@ -5,6 +5,8 @@ public class Account {
     private int id;
     private int user_id;
 
+    public Account() {}
+
     public Account(double balance, int id, int user_id){
         this.balance = balance;
         this.id = id;
